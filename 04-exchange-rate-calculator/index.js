@@ -13,24 +13,31 @@ currencyAmountOneEl.addEventListener('input', calculate);
 currencyTwoEl.addEventListener('change', calculate);
 currencyAmountTwoEl.addEventListener('input', calculate);
 
+swapEl.addEventListener('click', onSwapElClick);
+
 async function calculate() {
     const currencyOne = currencyOneEl.value;
     const currencyTwo = currencyTwoEl.value;
-    console.log(currencyOne, currencyTwo);
 
     let convertedRate;
     try {
         const req = await fetch(`${EXCHANGE_RATE_BASE_API}${currencyOne}`);
         const json = await req.json();
-        console.log(json);
         convertedRate = json['rates'][currencyTwo];
     } catch (e) {
         throw new Error('Couldn\'t fetch exchange rate.');
     }
 
-    rateEl.innerText = `1 ${currencyOne} = ${convertedRate} ${currencyTwo}`
+    rateEl.innerText = `1 ${currencyOne} = ${convertedRate} ${currencyTwo}`;
 
-    currencyAmountTwoEl.value = convertedRate * currencyAmountOneEl.value;
+    currencyAmountTwoEl.value = (convertedRate * currencyAmountOneEl.value).toFixed(2);
+}
+
+function onSwapElClick() {
+    const temp = currencyOneEl.value;
+    currencyOneEl.value = currencyTwoEl.value;
+    currencyTwoEl.value = temp;
+    calculate();
 }
 
 calculate();
